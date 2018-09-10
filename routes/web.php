@@ -14,3 +14,15 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+// GitHub login
+Route::get(
+    'login/github',
+    'Auth\LoginController@redirectToProvider'
+)->name('login');
+
+// GitHub login: OAuth callback
+Route::get(
+    'login/github/callback',
+    'Auth\LoginController@handleProviderCallback'
+);
