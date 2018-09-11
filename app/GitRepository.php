@@ -35,6 +35,24 @@ class GitRepository {
 		}
 	}
 
+	public function lock() {
+		$this->f = fopen($this->repo_dir . '/.git/.lock', 'c');
+		if (!flock($this->f, LOCK_EX)) {
+			fclose($this->f);
+			$this->f = null;
+			throw new ErrorException('Failed to get lock');
+		}
+	}
+
+	public function unlock() {
+		if (!$this->f) {
+			throw new ErrorException('Not locked');
+		}
+		flock($this->f, LOCK_UN);
+		fclose($this->f);
+		$this->f = null;
+	}
+
 	public function log($revs) {
         $format = new GitLogParser\Format([
             'commitHash',

@@ -43,8 +43,10 @@ class UpstreamCommitsList extends Controller
         $can_write = $user && $user->hasWriteAccess();
 
         if ($can_write) {
+            $git->lock();
             $git->fetchIfStale();
             $git->run('checkout', 'origin/master', '-B', 'master');
+            $git->unlock();
         }
 
         $commits = array_reverse($git->log("$show_commits_after..$branch"));
