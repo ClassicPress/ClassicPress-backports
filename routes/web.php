@@ -12,7 +12,14 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $user = Session::get('user');
+    if ($user) {
+        $user = $user->getNickname();
+    }
+    return print_r([
+        'page' => 'main',
+        'user' => $user,
+    ], true);
 });
 
 // GitHub login
