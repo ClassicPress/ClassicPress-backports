@@ -1,6 +1,11 @@
 <?php
 
 return [
+    // The GitHub repository that this app will manipulate.
+    'repo' => [
+        'owner' => 'ClassicPress',
+        'name' => 'ClassicPress',
+    ],
 
     /*
     |--------------------------------------------------------------------------

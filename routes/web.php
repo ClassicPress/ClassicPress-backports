@@ -16,11 +16,12 @@ Route::get('/', function () {
     if ($user) {
         $user = $user->getNickname();
     }
-    return print_r([
+    return '<pre>' . htmlentities(print_r([
         'page' => 'main',
         'user' => $user,
+        'github_permissions' => Session::get('github_permissions'),
         'status' => Session::get('status'),
-    ], true);
+    ], true)) . '</pre>';
 });
 
 // GitHub login

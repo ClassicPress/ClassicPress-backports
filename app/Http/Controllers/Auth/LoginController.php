@@ -8,6 +8,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 use Socialite;
 
+use GuzzleHttp\Client;
+
 class LoginController extends Controller
 {
     /**
@@ -23,6 +25,7 @@ class LoginController extends Controller
                 config('services.github.redirect')
                 . '?redirect=' . $request->input('redirect')
             )])
+            ->scopes(['repo'])
             ->redirect();
     }
 
@@ -36,10 +39,36 @@ class LoginController extends Controller
     {
         try {
             $user = Socialite::driver('github')->user();
-            $github_user = Socialite::driver('github')->userFromToken($user->token);
 
             Session::put('user', $user);
-            Session::put('github_user', $github_user);
+
+            // Query the GitHub API for the current user's permissions
+            $repo_owner = config('app.repo.owner');
+            $repo_name = config('app.repo.name');
+            $github_permissions = ["$repo_owner/$repo_name" => null];
+            $client = new Client([
+                'base_uri' => 'https://api.github.com/',
+                'timeout'  => 2,
+            ]);
+            $response = $client->request(
+                'GET',
+                sprintf(
+                    '/repos/%s/%s/collaborators/%s/permission',
+                    $repo_owner,
+                    $repo_name,
+                    $user->getNickname()
+                ), [
+                    'headers' => ['Authorization' => 'token ' . $user->token],
+                    'http_errors' => false,
+                ]
+            );
+            if ($response->getStatusCode() === 200) {
+                $permission = json_decode($response->getBody(), true)['permission'];
+                if ($permission !== 'none') {
+                    $github_permissions["$repo_owner/$repo_name"] = $permission;
+                }
+            } // Otherwise: no permissions
+            Session::put('github_permissions', $github_permissions);
 
             return redirect($request->input('redirect') ?: '/')
                 ->with('status', 'Welcome, ' . $user->getNickname());
