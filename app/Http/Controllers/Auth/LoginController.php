@@ -41,10 +41,21 @@ class LoginController extends Controller
             Session::put('user', $user);
             Session::put('github_user', $github_user);
 
-            return redirect($request->input('redirect') ?: '/');
+            return redirect($request->input('redirect') ?: '/')
+                ->with('status', 'Welcome, ' . $user->getNickname());
 
         } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
             return redirect('login/github');
         }
+    }
+
+    /**
+     * Log the current user out of the system.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout() {
+        Session::flush();
+        return redirect('/')->with('status', 'Logged out');
     }
 }

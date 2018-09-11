@@ -19,6 +19,7 @@ Route::get('/', function () {
     return print_r([
         'page' => 'main',
         'user' => $user,
+        'status' => Session::get('status'),
     ], true);
 });
 
@@ -32,4 +33,10 @@ Route::get(
 Route::get(
     'login/github/callback',
     'Auth\LoginController@handleProviderCallback'
+);
+
+// Log out
+Route::get(
+    'logout',
+    'Auth\LoginController@logout'
 );
