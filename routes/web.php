@@ -12,14 +12,11 @@
 */
 
 Route::get('/', function () {
-    $user = Session::get('user');
-    if ($user) {
-        $user = $user->getNickname();
-    }
+    $user = Auth::user();
     return '<pre>' . htmlentities(print_r([
         'page' => 'main',
-        'user' => $user,
-        'github_permissions' => Session::get('github_permissions'),
+        'user' => $user ? $user->username : null,
+        'github_permissions' => $user ? $user->refreshPermissions()->github_permissions : null,
         'status' => Session::get('status'),
     ], true)) . '</pre>';
 });

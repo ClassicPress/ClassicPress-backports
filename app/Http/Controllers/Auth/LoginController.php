@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Socialite;
-
-use GuzzleHttp\Client;
 
 class LoginController extends Controller
 {
@@ -38,40 +38,32 @@ class LoginController extends Controller
     public function handleProviderCallback(Request $request)
     {
         try {
-            $user = Socialite::driver('github')->user();
+            $gh_user = Socialite::driver('github')->user();
 
-            Session::put('user', $user);
+            // Tell Laravel that we are logged in
+            $user = User::whereEmail($gh_user->getEmail())->first();
+            $attributes = [
+                'name'         => $gh_user->getName(),
+                'avatar'       => $gh_user->getAvatar(),
+                'github_token' => $gh_user->token,
+            ];
+            if ($user) {
+                $user->fill($attributes);
+                $user->save();
+            } else {
+                $attributes += [
+                    'email'    => $gh_user->getEmail(),
+                    'username' => $gh_user->getNickname(),
+                    'password' => Hash::make(str_random(64)),
+                ];
+                $user = User::create($attributes);
+            }
+            Auth::login($user, true);
 
-            // Query the GitHub API for the current user's permissions
-            $repo_owner = config('app.repo.owner');
-            $repo_name = config('app.repo.name');
-            $github_permissions = ["$repo_owner/$repo_name" => null];
-            $client = new Client([
-                'base_uri' => 'https://api.github.com/',
-                'timeout'  => 2,
-            ]);
-            $response = $client->request(
-                'GET',
-                sprintf(
-                    '/repos/%s/%s/collaborators/%s/permission',
-                    $repo_owner,
-                    $repo_name,
-                    $user->getNickname()
-                ), [
-                    'headers' => ['Authorization' => 'token ' . $user->token],
-                    'http_errors' => false,
-                ]
-            );
-            if ($response->getStatusCode() === 200) {
-                $permission = json_decode($response->getBody(), true)['permission'];
-                if ($permission !== 'none') {
-                    $github_permissions["$repo_owner/$repo_name"] = $permission;
-                }
-            } // Otherwise: no permissions
-            Session::put('github_permissions', $github_permissions);
+            $user->refreshPermissions();
 
             return redirect($request->input('redirect') ?: '/')
-                ->with('status', 'Welcome, ' . $user->getNickname());
+                ->with('status', 'Welcome, ' . $user->username);
 
         } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
             return redirect('login/github');
@@ -84,7 +76,7 @@ class LoginController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function logout() {
-        Session::flush();
+        Auth::logout();
         return redirect('/')->with('status', 'Logged out');
     }
 }
