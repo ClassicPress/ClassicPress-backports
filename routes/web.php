@@ -38,3 +38,7 @@ Route::get(
     'logout',
     'Auth\LoginController@logout'
 );
+
+// Branches
+Route::get('branches/wp-4.9', 'UpstreamCommitsList@showBranch49');
+Route::get('branches/wp-trunk', 'UpstreamCommitsList@showBranchTrunk');

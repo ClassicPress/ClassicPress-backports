@@ -84,4 +84,19 @@ class User extends Authenticatable
         $this->save();
         return $this;
     }
+
+    /**
+     * Returns whether the user has write access to the application's GitHub
+     * repository.
+     *
+     * @return bool
+     */
+    public function hasWriteAccess() {
+        $repo_owner = config('app.repo.owner');
+        $repo_name = config('app.repo.name');
+
+        $this->refreshPermissions();
+        $permissions = $this->github_permissions["$repo_owner/$repo_name"] ?? null;
+        return ($permissions === 'write' || $permissions === 'admin');
+    }
 }
