@@ -23,7 +23,6 @@ class LoginController extends Controller
         return Socialite::driver('github')
             ->with(['redirect_uri' => (
                 config('services.github.redirect')
-                . '?redirect=' . $request->input('redirect')
             )])
             ->scopes(['repo'])
             ->redirect();
