@@ -11,15 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    $user = Auth::user();
-    return '<pre>' . htmlentities(print_r([
-        'page' => 'main',
-        'user' => $user ? $user->username : null,
-        'github_permissions' => $user ? $user->refreshPermissions()->github_permissions : null,
-        'status' => Session::get('status'),
-    ], true)) . '</pre>';
-});
+Route::get(
+    '/',
+    'HomeController@index'
+)->name('home');
 
 // GitHub login
 Route::get(
@@ -27,17 +22,29 @@ Route::get(
     'Auth\LoginController@redirectToProvider'
 )->name('login');
 
-// GitHub login: OAuth callback
+// GitHub login: OAuth callback for Fider
 Route::get(
-    'login/github/callback',
+    'login/github/callback/',
+    'Auth\LoginController@handleFiderOAuth'
+);
+
+// GitHub login: OAuth callback catch all
+Route::get(
+    'login/github/callback/{slug}',
     'Auth\LoginController@handleProviderCallback'
+);
+
+// get commits
+Route::get(
+    'commits',
+    'WPCommitsController@index'
 );
 
 // Log out
 Route::get(
     'logout',
     'Auth\LoginController@logout'
-);
+)->name('logout');
 
 // Branches
 Route::get('branches/wp-4.9', 'UpstreamCommitsList@showBranch49');
