@@ -22,16 +22,17 @@ Route::get(
     'Auth\LoginController@redirectToProvider'
 )->name('login');
 
-// GitHub login: OAuth callback for Fider
-Route::get(
-    'login/github/callback/',
-    'Auth\LoginController@handleFiderOAuth'
-);
-
 // GitHub login: OAuth callback catch all
 Route::get(
     'login/github/callback/{slug}',
     'Auth\LoginController@handleProviderCallback'
+);
+
+
+// GitHub login: OAuth callback for Fider
+Route::get(
+    'login/github/callback/',
+    'Auth\LoginController@handleFiderOAuth'
 );
 
 // get commits
