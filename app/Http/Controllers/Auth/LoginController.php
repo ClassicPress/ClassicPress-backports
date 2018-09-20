@@ -36,43 +36,41 @@ class LoginController extends Controller
      */
     public function handleProviderCallback($slug)
     {
-        if ($slug == 'bots') {
-          try {
-              $gh_user = Socialite::driver('github')->user();
+      if ($slug == 'network') {
+        return redirect('https://network.classicpress.net/');
+      }elseif ($slug == 'bots') {
+        try {
+            $gh_user = Socialite::driver('github')->user();
 
-              // Tell Laravel that we are logged in
-              $user = User::whereEmail($gh_user->getEmail())->first();
-              $attributes = [
-                  'name'         => $gh_user->getName(),
-                  'avatar'       => $gh_user->getAvatar(),
-                  'github_token' => $gh_user->token,
-              ];
-              if ($user) {
-                  $user->fill($attributes);
-                  $user->save();
-              } else {
-                  $attributes += [
-                      'email'    => $gh_user->getEmail(),
-                      'username' => $gh_user->getNickname(),
-                      'password' => Hash::make(str_random(64)),
-                  ];
-                  $user = User::create($attributes);
-              }
-              Auth::login($user, true);
+            // Tell Laravel that we are logged in
+            $user = User::whereEmail($gh_user->getEmail())->first();
+            $attributes = [
+                'name'         => $gh_user->getName(),
+                'avatar'       => $gh_user->getAvatar(),
+                'github_token' => $gh_user->token,
+            ];
+            if ($user) {
+                $user->fill($attributes);
+                $user->save();
+            } else {
+                $attributes += [
+                    'email'    => $gh_user->getEmail(),
+                    'username' => $gh_user->getNickname(),
+                    'password' => Hash::make(str_random(64)),
+                ];
+                $user = User::create($attributes);
+            }
+            Auth::login($user, true);
 
-              $user->refreshPermissions();
+            $user->refreshPermissions();
 
-              return redirect('/')
-                  ->with('status', 'Welcome, ' . $user->username);
+            return redirect('/')
+                ->with('status', 'Welcome, ' . $user->username);
 
-          } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
-              return redirect('login/github');
-          }
+        } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
+            return redirect('login/github');
         }
-
-        if ($slug == 'network') {
-            return redirect('https://network.classicpress.net/');
-        }
+      }
     }
 
     public function handleFiderOAuth(Request $request)
