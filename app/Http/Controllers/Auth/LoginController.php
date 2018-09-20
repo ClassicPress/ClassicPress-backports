@@ -34,10 +34,13 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback($slug)
+    public function handleProviderCallback(Request $request, $slug)
     {
+
       if ($slug == 'network') {
-        return redirect('https://network.classicpress.net/');
+        $code = $request->input('code');
+        $state = $request->input('state');
+        return redirect('https://network.classicpress.net/?code='.$code.'&state='.$state);
       }elseif ($slug == 'bots') {
         try {
             $gh_user = Socialite::driver('github')->user();
