@@ -69,6 +69,10 @@ class LoginController extends Controller
               return redirect('login/github');
           }
         }
+
+        if ($slug == 'network') {
+            return redirect('https://network.classicpress.net/');
+        }
     }
 
     public function handleFiderOAuth(Request $request)
