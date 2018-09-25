@@ -40,7 +40,7 @@ class LoginController extends Controller
       if ($slug == 'network') {
         $code = $request->input('code');
         $state = $request->input('state');
-        return redirect('https://classicpress.net/?code='.$code.'&state='.$state);
+        return redirect('https://www.classicpress.net/?code='.$code.'&state='.$state);
       }elseif ($slug == 'bots') {
         try {
             $gh_user = Socialite::driver('github')->user();
