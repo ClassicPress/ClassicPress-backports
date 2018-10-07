@@ -11,10 +11,7 @@
 |
 */
 
-Route::get(
-    '/',
-    'HomeController@index'
-)->name('home');
+Route::redirect('/', 'branches/wp-4.9', 302)->name('home');
 
 // GitHub login
 Route::get(
@@ -22,23 +19,10 @@ Route::get(
     'Auth\LoginController@redirectToProvider'
 )->name('login');
 
-// GitHub login: OAuth callback catch all
+// GitHub login: OAuth callback
 Route::get(
-    'login/github/callback/{slug}',
+    'login/github/callback',
     'Auth\LoginController@handleProviderCallback'
-);
-
-
-// GitHub login: OAuth callback for Fider
-Route::get(
-    'login/github/callback/',
-    'Auth\LoginController@handleFiderOAuth'
-);
-
-// get commits
-Route::get(
-    'commits',
-    'WPCommitsController@index'
 );
 
 // Log out
