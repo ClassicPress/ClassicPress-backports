@@ -6,8 +6,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use GuzzleHttp\Client;
-
 class User extends Authenticatable
 {
     use Notifiable;
@@ -19,7 +17,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 'email', 'password',
-        'username', 'avatar', 'github_token', 'github_permissions',
+        'username', 'avatar',
     ];
 
     /**
@@ -32,71 +30,21 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Returns whether the user has access to perform write operations.
      *
-     * @var array
-     */
-    protected $casts = [
-        'github_permissions' => 'array',
-    ];
-
-    /**
-     * Refresh the user's permissions from GitHub (if needed).
-     */
-    public function refreshPermissions() {
-        if (
-            !empty($this->github_permissions) &&
-            time() - $this->github_permissions['_updated'] < 30*60
-        ) {
-            return $this;
-        }
-
-        // Query the GitHub API for the current user's permissions
-        $repo_owner = config('app.repo.owner');
-        $repo_name = config('app.repo.name');
-        $github_permissions = ["$repo_owner/$repo_name" => null];
-        $client = new Client([
-            'base_uri' => 'https://api.github.com/',
-            'timeout'  => 2,
-        ]);
-        $response = $client->request(
-            'GET',
-            sprintf(
-                '/repos/%s/%s/collaborators/%s/permission',
-                $repo_owner,
-                $repo_name,
-                $this->username
-            ), [
-                'headers' => ['Authorization' => 'token ' . $this->github_token],
-                'http_errors' => false,
-            ]
-        );
-        if ($response->getStatusCode() === 200) {
-            $permission = json_decode($response->getBody(), true)['permission'];
-            if ($permission !== 'none') {
-                $github_permissions["$repo_owner/$repo_name"] = $permission;
-            }
-        } // Otherwise: no permissions
-
-        $github_permissions['_updated'] = time();
-        $this->github_permissions = $github_permissions;
-
-        $this->save();
-        return $this;
-    }
-
-    /**
-     * Returns whether the user has write access to the application's GitHub
-     * repository.
+     * Implemented this way to avoid requesting and storing GitHub API tokens
+     * (privileged 'repo' scope required to check membership via their API).
      *
      * @return bool
      */
     public function hasWriteAccess() {
-        $repo_owner = config('app.repo.owner');
-        $repo_name = config('app.repo.name');
-
-        $this->refreshPermissions();
-        $permissions = $this->github_permissions["$repo_owner/$repo_name"] ?? null;
-        return ($permissions === 'write' || $permissions === 'admin');
+        return in_array($this->username, [
+            'frozzare',
+            'nylen',
+            'scottybo',
+            'dsnid3r',
+            'Mte90',
+            'senlin',
+        ]);
     }
 }

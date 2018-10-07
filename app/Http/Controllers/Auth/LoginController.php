@@ -21,7 +21,7 @@ class LoginController extends Controller
     public function redirectToProvider(Request $request)
     {
         return Socialite::driver('github')
-            ->scopes(['repo'])
+            ->scopes(['read:user', 'user:email'])
             ->redirect();
     }
 
@@ -39,9 +39,8 @@ class LoginController extends Controller
             // Tell Laravel that we are logged in
             $user = User::whereEmail($gh_user->getEmail())->first();
             $attributes = [
-                'name'         => $gh_user->getName(),
-                'avatar'       => $gh_user->getAvatar(),
-                'github_token' => $gh_user->token,
+                'name'   => $gh_user->getName() ?? '',
+                'avatar' => $gh_user->getAvatar(),
             ];
             if ($user) {
                 $user->fill($attributes);
@@ -55,8 +54,6 @@ class LoginController extends Controller
                 $user = User::create($attributes);
             }
             Auth::login($user, true);
-
-            $user->refreshPermissions();
 
             return redirect('/')
                 ->with('status', 'Welcome, ' . $user->username);
