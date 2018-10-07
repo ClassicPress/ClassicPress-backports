@@ -55,8 +55,7 @@ class LoginController extends Controller
             }
             Auth::login($user, true);
 
-            return redirect('/')
-                ->with('status', 'Welcome, ' . $user->username);
+            return redirect('/');
 
         } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
             return redirect('login/github');
@@ -70,6 +69,6 @@ class LoginController extends Controller
      */
     public function logout() {
         Auth::logout();
-        return redirect('/')->with('status', 'Logged out');
+        return redirect('/');
     }
 }
