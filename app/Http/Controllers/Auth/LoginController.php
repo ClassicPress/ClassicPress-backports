@@ -21,9 +21,6 @@ class LoginController extends Controller
     public function redirectToProvider(Request $request)
     {
         return Socialite::driver('github')
-            ->with(['redirect_uri' => (
-                config('services.github.redirect')
-            )])
             ->scopes(['repo'])
             ->redirect();
     }
@@ -34,14 +31,8 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback(Request $request, $slug)
+    public function handleProviderCallback(Request $request)
     {
-
-      if ($slug == 'network') {
-        $code = $request->input('code');
-        $state = $request->input('state');
-        return redirect('https://www.classicpress.net/?code='.$code.'&state='.$state);
-      }elseif ($slug == 'bots') {
         try {
             $gh_user = Socialite::driver('github')->user();
 
@@ -73,12 +64,6 @@ class LoginController extends Controller
         } catch (\Laravel\Socialite\Two\InvalidStateException $ex) {
             return redirect('login/github');
         }
-      }
-    }
-
-    public function handleFiderOAuth(Request $request)
-    {
-      return redirect('https://login.fider.io/oauth/_geqncg2rpa/callback');
     }
 
     /**
