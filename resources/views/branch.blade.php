@@ -163,7 +163,6 @@
       <div class="md:flex justify-between items-center text-sm">
         <div class="text-center md:text-left py-3 md:py-4 border-b md:border-b-0">
           <a href="https://classicpress.net" target="_blank"class="no-underline text-grey-dark mr-4">Home</a>
-          <a href="https://www.iubenda.com/privacy-policy/41030260" target="_blank"class="no-underline text-grey-dark">Legal &amp; Privacy</a>
         </div>
         <div class="md:flex md:flex-row-reverse items-center py-4">
           <div class="text-grey text-center md:mr-4">&copy; <?php echo date("Y"); ?> ClassicPress</div>
