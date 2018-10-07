@@ -51,6 +51,23 @@ class UpstreamCommitsList extends Controller
 
         $commits = array_reverse($git->log("$show_commits_after..$branch"));
 
-        return $commits;
+        // HACK: Array to object
+        $commits = json_decode(json_encode($commits), false);
+
+        foreach ($commits as $commit) {
+            $commit->message = $commit->subject;
+            if ($commit->body) {
+                $commit->message .= "\n\n" . $commit->body;
+            }
+            // HACK: Match existing view logic
+            $commit->status = 0;
+            $commit->sha = $commit->commitHash;
+            $commit->html_link = sprintf(
+                'https://github.com/WordPress/wordpress-develop/commit/%s',
+                $commit->commitHash
+            );
+        }
+
+        return view('branch', compact('branch', 'user', 'commits'));
     }
 }
