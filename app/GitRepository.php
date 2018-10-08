@@ -33,6 +33,16 @@ class GitRepository {
 				$this->run('fetch', $remote)
 					->assertSuccess("Failed to fetch remote $remote");
 			}
+			$this
+				->run('checkout', 'origin/master', '-B', 'master')
+				->assertSuccess('Failed to check out the master branch');
+			// https://stackoverflow.com/a/1591255
+			$this
+				->run('branch', '-f', 'wp-4.9', 'upstream/4.9')
+				->assertSuccess('Failed to update the wp-4.9 branch');
+			$this
+				->run('branch', '-f', 'wp-trunk', 'upstream/master')
+				->assertSuccess('Failed to update the wp-trunk branch');
 		}
 	}
 
