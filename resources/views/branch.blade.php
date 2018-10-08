@@ -94,7 +94,7 @@
             <!-- Commit -->
             <div class="px-6 py-6 text-grey-darker border-b">
               <!-- Commit first row (info, message) -->
-              <div class="flex items-center border-b mb-3">
+              <div class="flex items-center mb-2">
                 <!-- Commit hash and other basic info -->
                 <div class="flex-no-shrink w-24">
                   <a
