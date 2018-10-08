@@ -132,7 +132,7 @@
                   </table>
                   <h5 class="commit-summary">{{$commit->subject}}</h5>
                   @if($commit->body)
-                    <pre class="commit-body">{{$commit->body}}</pre>
+                    <pre class="commit-body whitespace-pre-wrap">{{$commit->body}}</pre>
                   @endif
                 </div>
               </div>
