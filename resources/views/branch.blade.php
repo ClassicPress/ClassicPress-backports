@@ -92,9 +92,9 @@
             );
             ?>
             <!-- Commit -->
-            <div class="px-6 py-6 text-grey-darker items-center border-b">
+            <div class="px-6 py-6 text-grey-darker border-b">
               <!-- Commit first row (info, message) -->
-              <div class="flex items-center border-b">
+              <div class="flex items-center border-b mb-3">
                 <!-- Commit hash and other basic info -->
                 <div class="flex-no-shrink w-24">
                   <a
@@ -113,8 +113,10 @@
                     <tr>
                       <th class="pr-2">Author</th>
                       <td>
-                        {{$commit->authorText}}
-                        <strong>{{$commit->authorDateISO8601}}</strong>
+                        <div class="inline-flex">
+                          <span>{{$commit->authorText}}</span>
+                          <strong class="pl-2">{{$commit->authorDateISO8601}}</strong>
+                        </div>
                       </td>
                     </tr>
                     @if(
@@ -124,20 +126,25 @@
                       <tr>
                         <th class="pr-2">Committer</th>
                         <td>
-                          {{$commit->committerText}}
-                          <strong>{{$commit->committerDateISO8601}}</strong>
+                          <div class="inline-flex">
+                            <span>{{$commit->committerText}}</span>
+                            <strong class="pl-2">{{$commit->committerDateISO8601}}</strong>
+                          </div>
                         </td>
                       </tr>
                     @endif
                   </table>
                   <h5 class="commit-summary">{{$commit->subject}}</h5>
                   @if($commit->body)
-                    <pre class="commit-body whitespace-pre-wrap">{{$commit->body}}</pre>
+                    <pre
+                      class="commit-body whitespace-pre-wrap text-grey-dark"
+                    >{{$commit->body}}</pre>
                   @endif
                 </div>
               </div>
+
               <!-- Commit second row (status, actions) -->
-              <div class="flex">
+              <div class="flex items-center">
                 @if($user && $user->hasWriteAccess() && $commit->status == 0)
                   <!-- Modal -->
                   <div class="modal fade" id="modal-{{$commit->sha}}" tabindex="-1" role="dialog" aria-hidden="true">
@@ -169,29 +176,61 @@
                   </div>
                 @endif
 
-                <!-- Commit actions -->
-                <div class="inline-flex">
+                <!-- Commit status -->
+                <div class="pr-2 w-64">
                   @if($commit->status == 0)
-                    <span class="text-grey">
+                    <span class="text-grey-dark">
                       No action taken yet
                     </span>
                   @elseif($commit->status == 1)
-                    <a href="https://dosomething.com" class="no-underline text-grey" target="_blank">PR opened</a>
+                    <a
+                      href="https://dosomething.com"
+                      class="no-underline text-grey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >PR opened</a>
                   @else
-                    Commit declined: {{$commit->decline_response}}
-                  @endif
-
-                  @if($user && $user->hasWriteAccess())
-                    @if($commit->status == 0)
-                      <a href="http://dosomething.com"><button class="bg-blue hover:bg-grey text-white py-2 px-4 rounded-l">
-                        PR
-                      </button></a>
-                      <button data-toggle="modal" data-target="#modal-{{$commit->sha}}" class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-4 rounded-r">
-                        Decline
-                      </button>
-                    @endif
+                    Commit declined:<br>{{$commit->decline_response}}
                   @endif
                 </div>
+
+                <!-- Commit diff views -->
+                <div class="pr-2 inline-flex">
+                  <button
+                    class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-l"
+                    data-action="commit-diff"
+                    data-sha="{{$commit->sha}}"
+                  >
+                    Diff
+                  </button>
+                  <button
+                    class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-r"
+                    data-action="commit-merge-diff"
+                    data-sha="{{$commit->sha}}"
+                  >
+                    Merge and Diff
+                  </button>
+                </div>
+
+                <!-- Commit actions -->
+                @if($user && $user->hasWriteAccess())
+                  <div class="inline-flex">
+                    @if($commit->status == 0)
+                      <button
+                        class="bg-blue hover:bg-grey text-white py-2 px-4 rounded-l"
+                      >
+                        Submit PR
+                      </button>
+                      <button
+                        data-toggle="modal"
+                        data-target="#modal-{{$commit->sha}}"
+                        class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-4 rounded-r"
+                      >
+                        Decline Commit
+                      </button>
+                    @endif
+                  </div>
+                @endif
               </div>
             </div><!-- End commit -->
           <?php endforeach; ?>
