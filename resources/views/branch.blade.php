@@ -75,35 +75,78 @@
           </div>
 
           <!-- Commits list -->
-          <?php foreach ($commits as $commit): ?>
+          <?php
+          $i = 0;
+          $n = count($commits);
+          foreach ($commits as $commit):
+            $i++;
+            $commit->authorText = sprintf(
+              '%s <%s>',
+              $commit->authorName,
+              $commit->authorEmail
+            );
+            $commit->committerText = sprintf(
+              '%s <%s>',
+              $commit->committerName,
+              $commit->committerEmail
+            );
+            ?>
             <!-- Commit -->
-            <div class="flex-grow flex px-6 py-6 text-grey-darker items-center border-b -mx-4">
-              <!-- Commit hash and link -->
-              <div class="w-2/5 xl:w-1/6 px-4 flex items-center">
-                <span class="text-lg">
+            <div class="px-6 py-6 text-grey-darker items-center border-b">
+              <!-- Commit first row (info, message) -->
+              <div class="flex items-center border-b">
+                <!-- Commit hash and other basic info -->
+                <div class="flex-no-shrink w-24">
                   <a
-                    class="no-underline"
+                    class="no-underline text-lg"
                     href="{{$commit->html_link}}"
                     target="_blank"
                     rel="noopener noreferrer"
                   >{{substr($commit->sha, 0, 7)}}</a>
-              </span>
-              </div>
+                  <br>
+                  <span class="text-sm">{{$i}} of {{$n}}</span>
+                </div>
 
-              <!-- Commit message -->
-              <div class="hidden md:flex lg:hidden xl:flex w-2/3 px-4 items-center">
-                <pre class="commit-message">{{$commit->message}}</pre>
+                <!-- Commit author, committer, message -->
+                <div class="flex-1">
+                  <table class="text-xs">
+                    <tr>
+                      <th class="pr-2">Author</th>
+                      <td>
+                        {{$commit->authorText}}
+                        <strong>{{$commit->authorDateISO8601}}</strong>
+                      </td>
+                    </tr>
+                    @if(
+                      $commit->authorText !== $commit->committerText ||
+                      $commit->authorDateISO8601 !== $commit->committerDateISO8601
+                    )
+                      <tr>
+                        <th class="pr-2">Committer</th>
+                        <td>
+                          {{$commit->committerText}}
+                          <strong>{{$commit->committerDateISO8601}}</strong>
+                        </td>
+                      </tr>
+                    @endif
+                  </table>
+                  <h5 class="commit-summary">{{$commit->subject}}</h5>
+                  @if($commit->body)
+                    <pre class="commit-body">{{$commit->body}}</pre>
+                  @endif
+                </div>
               </div>
-
-              <!-- Commit actions container -->
-              <div class="flex w-1/6 md:w/12">
+              <!-- Commit second row (status, actions) -->
+              <div class="flex">
                 @if($user && $user->hasWriteAccess() && $commit->status == 0)
                   <!-- Modal -->
                   <div class="modal fade" id="modal-{{$commit->sha}}" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h5 class="modal-title">Decline commit <?php echo substr($commit->sha, 0, 7); ?></h5>
+                          <h5 class="modal-title">
+                            Decline commit {{substr($commit->sha, 0, 7)}}
+                          </h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>

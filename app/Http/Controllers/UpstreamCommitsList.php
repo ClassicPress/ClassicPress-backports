@@ -49,16 +49,12 @@ class UpstreamCommitsList extends Controller
             $git->unlock();
         }
 
-        $commits = array_reverse($git->log("$show_commits_after..$branch"));
+        $commits = $git->log("$show_commits_after..$branch");
 
         // HACK: Array to object
         $commits = json_decode(json_encode($commits), false);
 
         foreach ($commits as $commit) {
-            $commit->message = $commit->subject;
-            if ($commit->body) {
-                $commit->message .= "\n\n" . $commit->body;
-            }
             // HACK: Match existing view logic
             $commit->status = 0;
             $commit->sha = $commit->commitHash;
