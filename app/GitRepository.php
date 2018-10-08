@@ -72,6 +72,11 @@ class GitRepository {
 		return $parser->parse();
 	}
 
+	/**
+	 * Run an arbitrary git command.
+	 *
+	 * @return TQ\Vcs\Cli\CallResult (teqneers/php-stream-wrapper-for-git)
+	 */
 	public function run($command, ...$arguments) {
 		$call = $this->git->getGit()->createCall(
 			$this->git->getRepositoryPath(),
