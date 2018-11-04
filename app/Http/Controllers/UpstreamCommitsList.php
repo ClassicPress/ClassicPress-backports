@@ -19,6 +19,14 @@ class UpstreamCommitsList extends Controller
     }
 
     /**
+     * Display commits for the `wp-5.0` branch.
+     */
+    public function showBranch50() {
+        // 5d477aa7 is WP 4.9.8 (the parent commit of the WP 5.0 branch)
+        return $this->showBranch('wp-5.0', '5d477aa7');
+    }
+
+    /**
      * Display commits for the `wp-trunk` branch.
      */
     public function showBranchTrunk() {
