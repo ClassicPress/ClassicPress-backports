@@ -96,13 +96,24 @@
               <!-- Commit first row (info, message) -->
               <div class="flex items-center mb-2">
                 <!-- Commit hash and other basic info -->
-                <div class="flex-no-shrink w-24">
+                <div class="flex-no-shrink w-32">
+                  git:
                   <a
-                    class="no-underline text-lg"
-                    href="{{$commit->html_link}}"
+                    class="no-underline"
+                    href="{{$commit->github_link}}"
                     target="_blank"
                     rel="noopener noreferrer"
-                  >{{substr($commit->sha, 0, 7)}}</a>
+                  >{{substr($commit->commitHash, 0, 7)}}</a>
+                  @if($commit->svn_id)
+                    <br>
+                    svn:
+                    <a
+                      class="no-underline"
+                      href="{{$commit->trac_link}}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >r{{$commit->svn_id}}</a>
+                  @endif
                   <br>
                   <span class="text-sm">{{$i}} of {{$n}}</span>
                 </div>
@@ -145,14 +156,14 @@
 
               <!-- Commit second row (status, actions) -->
               <div class="flex items-center">
-                @if($user && $user->hasWriteAccess() && $commit->status == 0)
+                @if($user && $user->hasWriteAccess() && empty($commit->backport))
                   <!-- Modal -->
-                  <div class="modal fade" id="modal-{{$commit->sha}}" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal fade" id="modal-{{$commit->commitHash}}" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title">
-                            Decline commit {{substr($commit->sha, 0, 7)}}
+                            Decline commit {{substr($commit->commitHash, 0, 7)}}
                           </h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -178,10 +189,22 @@
 
                 <!-- Commit status -->
                 <div class="pr-2 w-64">
-                  @if($commit->status == 0)
+                  @if(empty($commit->backport))
                     <span class="text-grey-dark">
                       No action taken yet
                     </span>
+                  @else
+                    <span class="text-green-dark">
+                      Backported in
+                      <a
+                        class="no-underline"
+                        href="{{$commit->backport->github_link}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >{{substr($commit->backport->commitHash, 0, 7)}}</a>
+                    </span>
+                  @endif
+                  {{-- TODO
                   @elseif($commit->status == 1)
                     <a
                       href="https://dosomething.com"
@@ -192,30 +215,33 @@
                   @else
                     Commit declined:<br>{{$commit->decline_response}}
                   @endif
+                  --}}
                 </div>
 
                 <!-- Commit diff views -->
-                <div class="pr-2 inline-flex">
-                  <button
-                    class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-l"
-                    data-action="commit-diff"
-                    data-sha="{{$commit->sha}}"
-                  >
-                    Diff
-                  </button>
-                  <button
-                    class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-r"
-                    data-action="commit-merge-diff"
-                    data-sha="{{$commit->sha}}"
-                  >
-                    Merge and Diff
-                  </button>
-                </div>
+                @if(empty($commit->backport))
+                  <div class="pr-2 inline-flex">
+                    <button
+                      class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-l"
+                      data-action="commit-diff"
+                      data-sha="{{$commit->commitHash}}"
+                    >
+                      Diff
+                    </button>
+                    <button
+                      class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-r"
+                      data-action="commit-merge-diff"
+                      data-sha="{{$commit->commitHash}}"
+                    >
+                      Merge and Diff
+                    </button>
+                  </div>
+                @endif
 
                 <!-- Commit actions -->
                 @if($user && $user->hasWriteAccess())
                   <div class="inline-flex">
-                    @if($commit->status == 0)
+                    @if(empty($commit->backport))
                       <button
                         class="bg-blue hover:bg-grey text-white py-2 px-4 rounded-l"
                       >
@@ -223,7 +249,7 @@
                       </button>
                       <button
                         data-toggle="modal"
-                        data-target="#modal-{{$commit->sha}}"
+                        data-target="#modal-{{$commit->commitHash}}"
                         class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-4 rounded-r"
                       >
                         Decline Commit
