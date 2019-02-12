@@ -124,7 +124,7 @@ class UpstreamCommitsList extends Controller
             if ($backport) {
                 $backport->github_link = sprintf(
                     'https://github.com/ClassicPress/ClassicPress/commit/%s',
-                    $commit->commitHash
+                    $backport->commitHash
                 );
                 $commit->backport = $backport;
             }
