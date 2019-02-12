@@ -53,7 +53,7 @@ class UpstreamCommitsList extends Controller
         if ($can_write) {
             $git->lock();
             $git->fetchIfStale();
-            $git->run('checkout', 'origin/master', '-B', 'master');
+            $git->run('checkout', 'origin/develop', '-B', 'develop');
             $git->unlock();
         }
 

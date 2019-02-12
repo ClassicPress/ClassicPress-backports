@@ -29,22 +29,22 @@ class GitRepository {
 	public function fetchIfStale($threshold = 10*60) {
 		$last_fetch = @filemtime($this->repo_dir . '/.git/FETCH_HEAD');
 		if (time() - $last_fetch > 10*60) {
-			foreach (['origin', 'upstream'] as $remote) {
+			foreach (['origin', 'wp'] as $remote) {
 				$this->run('fetch', $remote)
 					->assertSuccess("Failed to fetch remote $remote");
 			}
 			$this
-				->run('checkout', 'origin/master', '-B', 'master')
+				->run('checkout', 'origin/develop', '-B', 'develop')
 				->assertSuccess('Failed to check out the master branch');
 			// https://stackoverflow.com/a/1591255
 			$this
-				->run('branch', '-f', 'wp-4.9', 'upstream/4.9')
+				->run('branch', '-f', 'wp-4.9', 'wp/4.9')
 				->assertSuccess('Failed to update the wp-4.9 branch');
 			$this
-				->run('branch', '-f', 'wp-5.0', 'upstream/5.0')
+				->run('branch', '-f', 'wp-5.0', 'wp/5.0')
 				->assertSuccess('Failed to update the wp-5.0 branch');
 			$this
-				->run('branch', '-f', 'wp-trunk', 'upstream/master')
+				->run('branch', '-f', 'wp-trunk', 'wp/master')
 				->assertSuccess('Failed to update the wp-trunk branch');
 		}
 	}
