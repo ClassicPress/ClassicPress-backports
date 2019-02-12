@@ -47,21 +47,21 @@ class UpstreamCommitsList extends Controller
         $backports = [];
 
         foreach ($commits as $commit) {
-            $ok = preg_match(
+            $n = preg_match_all(
                 '#Merges .* WordPress/wordpress-develop@([a-f-0-9]+) to ClassicPress#mi',
                 $commit->body,
                 $matches
             );
-            if ($ok) {
-                $hash = $matches[1];
-                if (strlen($hash) < 10) {
-                    error_log($hash . ' ' . json_encode($commit));
-                    $result = $git->run('rev-parse', $hash);
-                    $result->assertSuccess("git rev-parse $hash failed");
-                    $hash = trim($result->getStdOut());
-                    error_log($hash);
+            if ($n > 0) {
+                for ($i = 0; $i < $n; $i++) {
+                    $hash = $matches[1][$i];
+                    if (strlen($hash) < 10) {
+                        $result = $git->run('rev-parse', $hash);
+                        $result->assertSuccess("git rev-parse $hash failed");
+                        $hash = trim($result->getStdOut());
+                    }
+                    $backports[substr($hash, 0, 10)] = $commit;
                 }
-                $backports[substr($hash, 0, 10)] = $commit;
             }
         }
 
