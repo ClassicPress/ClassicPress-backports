@@ -34,4 +34,5 @@ Route::get(
 // Branches
 Route::get('branches/wp-4.9', 'UpstreamCommitsList@showBranch49');
 Route::get('branches/wp-5.0', 'UpstreamCommitsList@showBranch50');
+Route::get('branches/wp-5.1', 'UpstreamCommitsList@showBranch51');
 Route::get('branches/wp-trunk', 'UpstreamCommitsList@showBranchTrunk');

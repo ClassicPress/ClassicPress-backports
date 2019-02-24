@@ -27,6 +27,15 @@ class UpstreamCommitsList extends Controller
     }
 
     /**
+     * Display commits for the `wp-5.1` branch.
+     */
+    public function showBranch51() {
+        // 3ec3100 is `git merge-base wp-5.1 wp-trunk` (the last commit that WP
+        // 5.1 and trunk have in common)
+        return $this->showBranch('wp-5.1', '3ec3100');
+    }
+
+    /**
      * Display commits for the `wp-trunk` branch.
      */
     public function showBranchTrunk() {
