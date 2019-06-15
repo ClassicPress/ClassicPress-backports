@@ -45,39 +45,6 @@ class UpstreamCommitsList extends Controller
     }
 
     /**
-     * Determine which ClassicPress commits are backports of WP commits.
-     */
-    public function getBackportedCommits() {
-        $git = new GitRepository();
-
-        $commits = $git->log("LAST_WP_COMMIT..origin/develop");
-        // HACK: Array to object
-        $commits = json_decode(json_encode($commits), false);
-        $backports = [];
-
-        foreach ($commits as $commit) {
-            $n = preg_match_all(
-                '#Merges .* WordPress/wordpress-develop@([a-f-0-9]+) to ClassicPress#mi',
-                $commit->body,
-                $matches
-            );
-            if ($n > 0) {
-                for ($i = 0; $i < $n; $i++) {
-                    $hash = $matches[1][$i];
-                    if (strlen($hash) < 10) {
-                        $result = $git->run('rev-parse', $hash);
-                        $result->assertSuccess("git rev-parse $hash failed");
-                        $hash = trim($result->getStdOut());
-                    }
-                    $backports[substr($hash, 0, 10)] = $commit;
-                }
-            }
-        }
-
-        return $backports;
-    }
-
-    /**
      * Display commits for a branch.
      *
      * @param  string $branch
@@ -96,48 +63,13 @@ class UpstreamCommitsList extends Controller
             $git->lock();
             $git->fetchIfStale();
             $git->run('checkout', 'origin/develop', '-B', 'develop');
+            $git->updateLinkedChangesetsIfStale();
+            $git->updateBackportedCommitsIfStale();
             $git->unlock();
         }
 
         $commits = $git->log("$show_commits_after..$branch");
-        $backports = $this->getBackportedCommits();
-
-        // HACK: Array to object
-        $commits = json_decode(json_encode($commits), false);
-
-        foreach ($commits as $commit) {
-            $commit->github_link = sprintf(
-                'https://github.com/WordPress/wordpress-develop/commit/%s',
-                $commit->commitHash
-            );
-
-            $ok = preg_match(
-                '#^git-svn-id: https://develop.svn.wordpress.org/[^@\s]*@(\d+) #m',
-                $commit->body,
-                $matches
-            );
-            if ($ok) {
-                $commit->svn_id = (int) $matches[1];
-                $commit->trac_link = sprintf(
-                    'https://core.trac.wordpress.org/changeset/%d',
-                    $commit->svn_id
-                );
-            }
-
-            $commit->github_link = sprintf(
-                'https://github.com/WordPress/wordpress-develop/commit/%s',
-                $commit->commitHash
-            );
-
-            $backport = $backports[substr($commit->commitHash, 0, 10)] ?? null;
-            if ($backport) {
-                $backport->github_link = sprintf(
-                    'https://github.com/ClassicPress/ClassicPress/commit/%s',
-                    $backport->commitHash
-                );
-                $commit->backport = $backport;
-            }
-        }
+        $commits = $git->parseCommitsAfterLog($commits,true);
 
         return view('branch', compact('branch', 'user', 'commits'));
     }

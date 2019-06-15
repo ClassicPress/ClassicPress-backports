@@ -189,7 +189,17 @@
 
                 <!-- Commit status -->
                 <div class="pr-2 w-64">
-                  @if(empty($commit->backport))
+                  @if(!empty($commit->included_via))
+                    <span class="text-green-dark">
+                      Included via
+                      <a
+                        class="no-underline"
+                        href="{{$commit->included_via->github_link}}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >{{substr($commit->included_via->commitHash, 0, 7)}}</a>
+                    </span>
+                  @elseif(empty($commit->backport))
                     <span class="text-grey-dark">
                       No action taken yet
                     </span>
@@ -219,7 +229,7 @@
                 </div>
 
                 <!-- Commit diff views -->
-                @if(empty($commit->backport))
+                @if(empty($commit->backport) && empty($commit->included_via))
                   <div class="pr-2 inline-flex">
                     <button
                       class="bg-grey-light hover:bg-grey text-grey-darkest py-2 px-3 rounded-l"
@@ -241,7 +251,7 @@
                 <!-- Commit actions -->
                 @if($user && $user->hasWriteAccess())
                   <div class="inline-flex">
-                    @if(empty($commit->backport))
+                    @if(empty($commit->backport) && empty($commit->included_via))
                       <button
                         class="bg-blue hover:bg-grey text-white py-2 px-4 rounded-l"
                       >
