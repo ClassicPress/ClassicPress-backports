@@ -228,6 +228,7 @@
                   --}}
                 </div>
 
+                {{-- TODO
                 <!-- Commit diff views -->
                 @if(empty($commit->backport) && empty($commit->included_via))
                   <div class="pr-2 inline-flex">
@@ -247,7 +248,9 @@
                     </button>
                   </div>
                 @endif
+                --}}
 
+                {{-- TODO
                 <!-- Commit actions -->
                 @if($user && $user->hasWriteAccess())
                   <div class="inline-flex">
@@ -267,6 +270,7 @@
                     @endif
                   </div>
                 @endif
+                --}}
               </div>
             </div><!-- End commit -->
           <?php endforeach; ?>
