@@ -345,6 +345,12 @@ class GitRepository {
 				);
 			}
 
+			$commit->body = trim(preg_replace(
+				'#^git-svn-id: https://develop.svn.wordpress.org/[^@\s]*@(\d+) .*$#m',
+				'',
+				$commit->body
+			));
+
 			$commit->github_link = sprintf(
 				'https://github.com/WordPress/wordpress-develop/commit/%s',
 				$commit->commitHash
