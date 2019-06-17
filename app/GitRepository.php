@@ -131,7 +131,7 @@ class GitRepository {
 			$is_merge_of_svn = [];
 
 			$ok = preg_match(
-				'#^Merges.*\[\d.*\d\].*\b(into|onto|to)\b#mi',
+				'#^(Merge|Backport).*\[\d.*\d\].*\b(into|onto|to)\b#mi',
 				$commit->body,
 				$matches
 			);
