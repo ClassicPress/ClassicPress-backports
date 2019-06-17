@@ -403,7 +403,7 @@ class GitRepository {
 						if (isset($commit->included_via)) {
 							$this->debug(
 								"Commit {$commit->commitHash} included via both "
-								. "{$commit->included_via} and $m"
+								. "{$commit->included_via->commitHash} and $m"
 							);
 						}
 						$commit->included_via = (object)[
