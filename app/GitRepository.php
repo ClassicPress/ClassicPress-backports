@@ -370,7 +370,6 @@ class GitRepository {
 			foreach ($backport_candidates as $c) {
 				$prev_backport = $backport;
 				$new_backport = $this->classicpress_backports[substr($c, 0, 10)] ?? null;
-				error_log(json_encode(compact('backport_candidates', 'linked', 'c', 'backport')));
 				if ($new_backport) {
 					if ($prev_backport && $new_backport !== $prev_backport) {
 						$this->debug(
