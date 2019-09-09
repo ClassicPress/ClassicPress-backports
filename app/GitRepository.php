@@ -383,7 +383,31 @@ class GitRepository {
 					array_keys($linked['is_merged_by']),
 					array_keys($linked['is_merge_of'])
 				);
+				// Handle commits made to trunk and then merged to multiple
+				// branches, where ClassicPress took one of the branch commits.
+				// $linked['is_merge_of'] will contain the trunk commit, so add
+				// all of its 'is_merged_by' commits as backport candidates
+				// too. Concrete example:
+				//
+				// Commit from 5.2 that should show up as backported:
+				// https://github.com/WordPress/wordpress-develop/commit/66a1deb1
+				//
+				// ClassicPress backported the corresponding commit from 4.9:
+				// https://github.com/WordPress/wordpress-develop/commit/f7824236
+				//
+				// Both of the above commits are merges of this one from trunk:
+				// https://github.com/WordPress/wordpress-develop/commit/cda102f7
+				foreach (array_keys($linked['is_merge_of']) as $follow) {
+					$linked2 = $this->linked_changesets[$follow] ?? null;
+					if ($linked2) {
+						foreach ($linked2['is_merged_by'] as $linked3 => $ignore) {
+							$backport_candidates[] = $linked3;
+						}
+					}
+				}
+				$backport_candidates = array_unique($backport_candidates);
 			}
+
 			foreach ($backport_candidates as $c) {
 				$prev_backport = $backport;
 				$new_backport = $this->classicpress_backports[substr($c, 0, 10)] ?? null;
