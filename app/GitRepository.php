@@ -479,7 +479,17 @@ class GitRepository {
 		}
 		$parser->setGitDir($this->repo_dir);
 		$parser->setBranch($revs);
-		return $parser->parse();
+		// Hack - the underlying library needs error handling instead :(
+		$commits = $parser->parse();
+		if (!count($commits)) {
+			$log_args = [$revs];
+			if ($all_branches) {
+				$log_args[] = '--all';
+			}
+			$this->run('log', ...$log_args)
+				->assertSuccess('git log failed');
+		}
+		return $commits;
 	}
 
 	/**
