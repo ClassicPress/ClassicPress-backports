@@ -41,7 +41,7 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env(
             'GITHUB_REDIRECT_URL',
-            'https://bots.classicpress.net/login/github/callback'
+            'https://backports.classicpress.net/login/github/callback'
         ),
     ],
 ];

@@ -7,7 +7,7 @@
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://unpkg.com/tailwindcss@0.4.0/dist/tailwind.min.css">
         <link rel="stylesheet" href="{{URL::asset('css/app.css')}}">
-        <title>ClassicPress Bots</title>
+        <title>ClassicPress Backports</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" type="text/css">
@@ -26,7 +26,7 @@
           <div class="w-1/4 md:hidden">
           </div>
           <div class="w-1/2 md:w-auto text-center text-black text-2xl font-medium">
-            ClassicPress Bots
+            ClassicPress Backports
           </div>
           @if($user)
             <div class="w-1/4 md:w-auto md:flex text-right">
