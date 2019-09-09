@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\Session;
 
 class UpstreamCommitsList extends Controller
 {
+
     /**
      * Display a list of available branches.
      */
     public function index() {
         return view('index', [
             'user' => Auth::user(),
-            'branches' => ['4.9', '5.0', '5.1', 'trunk'],
+            'branches' => ['4.9', '5.0', '5.1', '5.2', 'trunk'],
         ]);
     }
 
@@ -43,6 +44,15 @@ class UpstreamCommitsList extends Controller
         // 3ec31001 is `git merge-base wp-5.1 wp-trunk` (the last commit that WP
         // 5.1 and trunk have in common)
         return $this->showBranch('wp-5.1', '3ec31001');
+    }
+
+    /**
+     * Display commits for the `wp-5.2` branch.
+     */
+    public function showBranch52() {
+        // dc512708 is `git merge-base wp-5.2 wp-trunk` (the last commit that WP
+        // 5.2 and trunk have in common)
+        return $this->showBranch('wp-5.2', 'dc512708');
     }
 
     /**
