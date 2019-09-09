@@ -72,10 +72,24 @@ class GitRepository {
 			return;
 		}
 
-		foreach (['origin', 'wp'] as $remote) {
-			$this->run('fetch', $remote)
-				->assertSuccess("Failed to fetch remote $remote");
+		// git fetch origin
+		$this->run('fetch', 'origin')
+			->assertSuccess('Failed to fetch remote: origin');
+		// git fetch wp (set up 'wp' remote and retry if needed)
+		try {
+			$this->run('fetch', 'wp')
+				->assertSuccess('Failed to fetch remote: wp (try 1)');
+		} catch (\Throwable $e) {
+			$this->run(
+				'remote',
+				'add',
+				'wp',
+				'https://github.com/WordPress/wordpress-develop.git'
+			)->assertSuccess('Failed to add remote: wp');
+			$this->run('fetch', 'wp')
+				->assertSuccess('Failed to fetch remote: wp');
 		}
+
 		$this
 			->run('checkout', 'origin/develop', '-B', 'develop')
 			->assertSuccess('Failed to check out the master branch');
