@@ -11,7 +11,8 @@
 |
 */
 
-Route::redirect('/', 'branches/wp-4.9', 302)->name('home');
+// Index
+Route::get('/', 'UpstreamCommitsList@index')->name('home');
 
 // GitHub login
 Route::get(

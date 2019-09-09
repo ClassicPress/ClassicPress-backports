@@ -26,7 +26,7 @@
           <div class="w-1/4 md:hidden">
           </div>
           <div class="w-1/2 md:w-auto text-center text-black text-2xl font-medium">
-            ClassicPress Backports
+            <a href="/">ClassicPress Backports</a>
           </div>
           @if($user)
             <div class="w-1/4 md:w-auto md:flex text-right">

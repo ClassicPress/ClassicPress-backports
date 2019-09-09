@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Session;
 class UpstreamCommitsList extends Controller
 {
     /**
+     * Display a list of available branches.
+     */
+    public function index() {
+        return view('index', [
+            'user' => Auth::user(),
+            'branches' => ['4.9', '5.0', '5.1', 'trunk'],
+        ]);
+    }
+
+    /**
      * Display commits for the `wp-4.9` branch.
      */
     public function showBranch49() {
