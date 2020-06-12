@@ -16,7 +16,7 @@ class UpstreamCommitsList extends Controller
     public function index() {
         return view('index', [
             'user' => Auth::user(),
-            'branches' => ['4.9', '5.0', '5.1', '5.2', 'trunk'],
+            'branches' => ['4.9', '5.0', '5.1', '5.2', '5.3', '5.4', 'trunk'],
         ]);
     }
 
@@ -53,6 +53,24 @@ class UpstreamCommitsList extends Controller
         // dc512708 is `git merge-base wp-5.2 wp-trunk` (the last commit that WP
         // 5.2 and trunk have in common)
         return $this->showBranch('wp-5.2', 'dc512708');
+    }
+
+    /**
+     * Display commits for the `wp-5.3` branch.
+     */
+    public function showBranch53() {
+        // c67b47c66 is `git merge-base wp-5.3 wp-trunk` (the last commit that WP
+        // 5.3 and trunk have in common)
+        return $this->showBranch('wp-5.3', 'c67b47c66');
+    }
+
+    /**
+     * Display commits for the `wp-5.4` branch.
+     */
+    public function showBranch54() {
+        // 66f510bda is `git merge-base wp-5.4 wp-trunk` (the last commit that WP
+        // 5.4 and trunk have in common)
+        return $this->showBranch('wp-5.4', '66f510bda');
     }
 
     /**
