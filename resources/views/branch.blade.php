@@ -50,7 +50,7 @@
           @else
             <div class="w-1/4 md:w-auto md:flex text-right">
               <div>
-                <img class="inline-block h-8 w-8 rounded-full" src="https://classicpress.assets-fider.io/images/100/120" alt="">
+                <img class="inline-block h-8 w-8 rounded-full" src="https://www.classicpress.net/wp-admin/images/wordpress-logo.svg" alt="">
               </div>
               <div class="hidden md:block md:flex md:items-center ml-2">
                 <a href="{{ route('login') }}" class="text-black text-sm mr-1 hover:text-blue no-underline">Log in</a>
