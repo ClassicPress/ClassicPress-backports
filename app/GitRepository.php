@@ -113,6 +113,21 @@ class GitRepository {
 			->run('branch', '-f', 'wp-5.4', 'wp/5.4')
 			->assertSuccess('Failed to update the wp-5.4 branch');
 		$this
+			->run('branch', '-f', 'wp-5.5', 'wp/5.5')
+			->assertSuccess('Failed to update the wp-5.5 branch');
+		$this
+			->run('branch', '-f', 'wp-5.6', 'wp/5.6')
+			->assertSuccess('Failed to update the wp-5.6 branch');
+		$this
+			->run('branch', '-f', 'wp-5.7', 'wp/5.7')
+			->assertSuccess('Failed to update the wp-5.7 branch');
+		$this
+			->run('branch', '-f', 'wp-5.8', 'wp/5.8')
+			->assertSuccess('Failed to update the wp-5.8 branch');
+		$this
+			->run('branch', '-f', 'wp-5.9', 'wp/5.9')
+			->assertSuccess('Failed to update the wp-5.9 branch');
+		$this
 			->run('branch', '-f', 'wp-trunk', 'wp/master')
 			->assertSuccess('Failed to update the wp-trunk branch');
 	}
